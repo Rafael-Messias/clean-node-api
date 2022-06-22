@@ -1,10 +1,14 @@
 import { SingUpController } from './signup'
 import { MissingParamError } from '../errors/missing-param-error'
 
+const makeSut = (): SingUpController => {
+  return new SingUpController()
+}
+
 describe('SingUp Controller', () => {
   test('Should return 400 if no name is provided', () => {
     // padrão de variável inicada com sut (System Under Test)
-    const sut = new SingUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         email: 'any_email@email.com',
@@ -19,7 +23,7 @@ describe('SingUp Controller', () => {
 
   test('Should return 400 if no email is provided', () => {
     // padrão de variável inicada com sut (System Under Test)
-    const sut = new SingUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -34,7 +38,7 @@ describe('SingUp Controller', () => {
 
   test('Should return 400 if no password is provided', () => {
     // padrão de variável inicada com sut (System Under Test)
-    const sut = new SingUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -49,7 +53,7 @@ describe('SingUp Controller', () => {
 
   test('Should return 400 if no password confirmation is provided', () => {
     // padrão de variável inicada com sut (System Under Test)
-    const sut = new SingUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
