@@ -196,9 +196,11 @@ describe('SingUp Controller', () => {
   test('Should return 500 if AddAccount throws', async () => {
     // padrão de variável inicada com sut (System Under Test)
     const { sut, addAccountStub } = makeSut()
-    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(async () => {
+    jest.spyOn(addAccountStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+
+    /* .mockImplementationOnce(async () => {
       throw new Promise((resolve, reject) => reject(new Error()))
-    })
+    }) */
     const httpRequest = {
       body: {
         name: 'any_name',
