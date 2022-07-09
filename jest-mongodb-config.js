@@ -8,5 +8,6 @@ module.exports = {
       dbName: 'jest'
     },
     autoStart: false
-  }
+  },
+  mongoURLEnvName: 'MONGODB_URI'
 }
