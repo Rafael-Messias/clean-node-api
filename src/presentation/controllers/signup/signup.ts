@@ -2,7 +2,7 @@ import { badRequest, serverError, ok } from '../../helpers/http-helper'
 import { HttpResponse, HttpRequest, Controller, EmailValidator, AddAccount } from './signup-protocols'
 import { InvalidParamError, MissingParamError } from '../../errors'
 
-export class SingUpController implements Controller {
+export class SignUpController implements Controller {
   private readonly emailValidator: EmailValidator
   private readonly addAcount: AddAccount
 
