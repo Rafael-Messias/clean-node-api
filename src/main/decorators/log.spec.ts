@@ -1,9 +1,12 @@
+import { LogErrorRepository } from '../../data/protocols/log-error-repository'
+import { serverError } from '../../presentation/helpers/http-helper'
 import { Controller, HttpRequest, HttpResponse } from '../../presentation/protocols'
 import { LogControllerDecotaror } from './log'
 
 interface SutTypes {
   sut: LogControllerDecotaror
   controllerStub: Controller
+  logErrorRepositoryStub: LogErrorRepository
 }
 
 const makeController = (): Controller => {
@@ -21,12 +24,24 @@ const makeController = (): Controller => {
   return new ControllerStub()
 }
 
+const makeLogErrrorRepository = (): LogErrorRepository => {
+  class LogErrorRepositoryStub implements LogErrorRepository {
+    async log (stack: string): Promise<void> {
+      return new Promise(resolve => resolve())
+    }
+  }
+  return new LogErrorRepositoryStub()
+}
+
 const makeSut = (): SutTypes => {
   const controllerStub = makeController()
-  const sut = new LogControllerDecotaror(controllerStub)
+  const logErrorRepositoryStub = makeLogErrrorRepository()
+  const sut = new LogControllerDecotaror(controllerStub, logErrorRepositoryStub)
+
   return {
     sut,
-    controllerStub
+    controllerStub,
+    logErrorRepositoryStub
   }
 }
 
@@ -66,7 +81,12 @@ describe('LogController Decorator', () => {
   })
 
   test('Should call LogErrorRepository with correct error if controller returns a server error', async () => {
-    const { sut } = makeSut()
+    const { sut, controllerStub, logErrorRepositoryStub } = makeSut()
+    const fakeError = new Error()
+    fakeError.stack = 'any_stack'
+    const logSpy = jest.spyOn(logErrorRepositoryStub, 'log')
+    const error = serverError(fakeError)
+    jest.spyOn(controllerStub, 'handle').mockResolvedValueOnce(new Promise(resolve => resolve(error)))
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -75,12 +95,7 @@ describe('LogController Decorator', () => {
         passwordConfirmation: 'any_password'
       }
     }
-    const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual({
-      statusCode: 200,
-      body: {
-        name: 'Rafael'
-      }
-    })
+    await sut.handle(httpRequest)
+    expect(logSpy).toHaveBeenCalledWith('any_stack')
   })
 })
