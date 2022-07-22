@@ -157,8 +157,9 @@ describe('SingUp Controller', () => {
   test('Should return 500 if EmailValidator throws', async () => {
     // padrão de variável inicada com sut (System Under Test)
     const { sut, emailValidatorStub } = makeSut()
+    const error: Error = new Error()
     jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => {
-      throw new Error()
+      throw error
     })
     const httpRequest = {
       body: {
@@ -170,7 +171,7 @@ describe('SingUp Controller', () => {
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
+    expect(httpResponse.body).toEqual(new ServerError(error.stack as string))
   })
 
   test('Should call AddAccount with correct values', async () => {
@@ -196,7 +197,8 @@ describe('SingUp Controller', () => {
   test('Should return 500 if AddAccount throws', async () => {
     // padrão de variável inicada com sut (System Under Test)
     const { sut, addAccountStub } = makeSut()
-    jest.spyOn(addAccountStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => reject(new Error())))
+    const error: Error = new Error()
+    jest.spyOn(addAccountStub, 'add').mockReturnValueOnce(new Promise((resolve, reject) => reject(error)))
 
     /* .mockImplementationOnce(async () => {
       throw new Promise((resolve, reject) => reject(new Error()))
@@ -211,7 +213,7 @@ describe('SingUp Controller', () => {
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(500)
-    expect(httpResponse.body).toEqual(new ServerError())
+    expect(httpResponse.body).toEqual(new ServerError(error.stack as string))
   })
 
   test('Should return 200 if valid data is provided', async () => {
