@@ -23,7 +23,7 @@ const makeAddAccount = (): AddAccount => {
 
 const makeValidation = (): Validation => {
   class ValidationStub implements Validation { // Stub - um dublê de testes
-    validate (input: any): Error {
+    validate (input: any): Error | null {
       return null
     }
   }
